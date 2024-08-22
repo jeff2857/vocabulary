@@ -1,6 +1,5 @@
 import { Skeleton, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import md5 from 'md5';
 
 interface Props {
 	index: number;
@@ -27,7 +26,7 @@ export const AnswerRow = ({
 	const [trans, setTrans] = useState('');
 
 	const fetchTranslation = async () => {
-		const res = await fetch('http://localhost:3000/api/translate', {
+		const res = await fetch(`${window.origin}/api/translate`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
