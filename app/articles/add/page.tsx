@@ -4,7 +4,7 @@ import { addArticle, getWords } from '@/utils/dbUtil';
 import { TextField, Button, Snackbar } from '@mui/material';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 const AddArticlePage = () => {
 	const searchParams = useSearchParams();
@@ -121,4 +121,12 @@ const AddArticlePage = () => {
 	);
 };
 
-export default AddArticlePage;
+const Default = () => {
+	return (
+		<Suspense>
+			<AddArticlePage />
+		</Suspense>
+	);
+};
+
+export default Default;

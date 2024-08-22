@@ -12,7 +12,7 @@ import {
 	TextField,
 } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 const DetailPage = () => {
 	const searchParams = useSearchParams();
@@ -117,4 +117,12 @@ const DetailPage = () => {
 	);
 };
 
-export default DetailPage;
+const Default = () => {
+	return (
+		<Suspense>
+			<DetailPage />
+		</Suspense>
+	);
+};
+
+export default Default;
