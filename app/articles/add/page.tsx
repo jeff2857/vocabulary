@@ -1,5 +1,6 @@
 'use client';
 
+import { formatArticleName, getArticleNameTs } from '@/utils/articleUtil';
 import { addArticle, getWords } from '@/utils/dbUtil';
 import { TextField, Button, Snackbar } from '@mui/material';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -11,7 +12,7 @@ const AddArticlePage = () => {
 	const router = useRouter();
 
 	const [articleName, setArticleName] = useState(
-		searchParams.get('article') || ''
+		formatArticleName(searchParams.get('article') || '')
 	);
 	const [words, setWords] = useState('');
 	const [snackOpen, setSnackOpen] = useState(false);
@@ -25,7 +26,13 @@ const AddArticlePage = () => {
 	const saveArticle = async () => {
 		setSaveLoading(true);
 		try {
-			await addArticle(articleName, words);
+			const now = new Date();
+			let nameWithTs = `${articleName}:${now.valueOf()}`;
+			if (searchParams.get('article')) {
+				const ts = getArticleNameTs(searchParams.get('article') || '');
+				nameWithTs = `${articleName}${ts ? ':' : ''}${ts}`;
+			}
+			await addArticle(nameWithTs, words);
 			router.push('/');
 		} catch (err: any) {
 			setSnackMsg((err as Error).message);

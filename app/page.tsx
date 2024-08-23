@@ -1,6 +1,7 @@
 'use client';
 
 import { useArticles } from '@/hooks/useArticles';
+import { formatArticleName } from '@/utils/articleUtil';
 import { delArticle } from '@/utils/dbUtil';
 import { Add, Delete, Edit } from '@mui/icons-material';
 import {
@@ -9,6 +10,7 @@ import {
 	IconButton,
 	Modal,
 	Skeleton,
+	Snackbar,
 	Table,
 	TableBody,
 	TableCell,
@@ -21,10 +23,14 @@ import { useState } from 'react';
 export default function Home() {
 	const router = useRouter();
 
-	const { articles, loading } = useArticles();
+	const [refreshNum, setRefreshNum] = useState(0);
+
+	const { articles, loading } = useArticles(refreshNum);
 
 	const [delModalOpen, setDelModalOpen] = useState(false);
 	const [curArticle, setCurArticle] = useState('');
+	const [snackOpen, setSnackOpen] = useState(false);
+	const [snackMsg, setSnackMsg] = useState('');
 
 	const goAdd = () => {
 		router.push('/articles/add');
@@ -39,7 +45,14 @@ export default function Home() {
 	};
 
 	const goDel = async (article: string) => {
-		await delArticle(article);
+		try {
+			await delArticle(article);
+			setRefreshNum((prev) => prev + 1);
+			setDelModalOpen(false);
+		} catch (err: any) {
+			setSnackMsg((err as Error).message);
+			setSnackOpen(true);
+		}
 	};
 
 	return (
@@ -69,7 +82,7 @@ export default function Home() {
 										className="cursor-pointer"
 										onClick={() => goDetail(article)}
 									>
-										{article}
+										{formatArticleName(article)}
 									</TableCell>
 									<TableCell align="right">
 										<div>
@@ -143,6 +156,14 @@ export default function Home() {
 					</div>
 				</Box>
 			</Modal>
+
+			<Snackbar
+				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+				open={snackOpen}
+				onClose={() => setSnackOpen(false)}
+				message={snackMsg}
+				autoHideDuration={3000}
+			/>
 		</div>
 	);
 }
